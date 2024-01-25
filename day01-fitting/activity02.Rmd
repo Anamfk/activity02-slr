@@ -36,10 +36,12 @@ If you would like to try the *ISLR* labs using these two packages instead of bas
 - Once you have verified that both `{tidyverse}` and `{tidymodels}` are installed, load these packages in the R chunk below titled `setup`.
   That is, type the following:
   
-  ```{r library-example, eval = FALSE}
-  library(tidyverse)
-  library(tidymodels)
-  ```
+```{r library-example, eval = FALSE}
+library(tidyverse)
+library(tidymodels)
+library(dplyr)
+library(ggplot2)
+```
   
 - Run the `setup` code chunk and/or **knit** <img src="../README-img/knit-icon.png" alt="knit" width = "20"/> icon your Rmd document to verify that no errors occur.
 
@@ -58,13 +60,25 @@ Here is the "about" page: https://www.openintro.org/data/index.php?data=hfi.
 
 In the R code chunk below titled `load-data`, you will type the code that reads in the above linked CSV file by doing the following:
 
+
 - Rather than downloading this file, uploading to RStudio, then reading it in, explore how to load this file directly from the provided URL with `readr::read_csv` (`{readr}` is part of `{tidyverse}`).
 - Assign this data set into a data frame named `hfi` (short for "Human Freedom Index").
 
 After doing this and viewing the loaded data, answer the following questions:
 
+
+```{r loading data}
+
+#loading data
+hfi<- readr::read_csv("hfi.csv")
+
+#viewing data
+#view(hfi)
+```
 1. What are the dimensions of the dataset?
   What does each row represent?
+
+**123 columns/ variables and 1458 entries/rows. Row represent the entries.**
 
 The dataset spans a lot of years.
 We are only interested in data from year 2016.
@@ -74,6 +88,13 @@ In the R code chunk below titled `hfi-2016`, type the code that does the followi
 - Assigns the result to a data frame named `hfi_2016`.
 
 ```{r hfi-2016}
+# Filter the data for the year 2016
+hfi_2016 <- hfi %>% 
+  filter(year == 2016)
+
+
+# Display the first few rows of the filtered data
+head(hfi_2016)
 
 ```
 
@@ -99,6 +120,24 @@ Answer the following questions (use your markdown skills) and complete the follo
 
 ```{r distribution-plots}
 
+#`univariable-plots`
+# Plotting pf_score
+ggplot(hfi_2016, aes(x = pf_score)) +
+  geom_histogram(binwidth = 1, fill = "skyblue", color = "black") +
+  labs(title = "Distribution of pf_score",
+       x = "pf_score",
+       y = "Frequency")
+
+
+#`univariable-plots`
+# Plotting pf_expression_control
+ggplot(hfi_2016, aes(x = pf_expression_control)) +
+  geom_density(fill = "skyblue") +
+  labs(title = "Distribution of pf_expression_control",
+       x = "pf_expression_control",
+       y = "percent")
+
+
 ```
 
 4. Comment on each of these two distributions. 
@@ -113,6 +152,15 @@ Answer the following questions (use your markdown skills) and complete the follo
 - In the R code chunk below titled `relationship-plot`, plot this relationship using the variable `pf_expression_control` as the predictor/explanatory variable.
 
 ```{r relationship-plot}
+
+# Scatter plot of pf_score vs. pf_expression_control
+ggplot(hfi_2016, aes(x = pf_expression_control, y = pf_score, color = pf_expression_control)) +
+  geom_point(position = position_jitter(width = 0.3, height = 0), size = 3) +
+  labs(title = "Relationship between pf_score and pf_expression_control",
+       x = "pf_expression_control",
+       y = "pf_score",
+       color = "pf_expression_control")
+
 
 ```
 

@@ -1,0 +1,35 @@
+---
+title: "Untitled"
+author: "Anam Fatma"
+date: "2024-01-25"
+output: html_document
+---
+  
+```{r library-example, eval = FALSE}
+  library(tidyverse)
+  library(tidymodels)
+```
+
+###Load data
+
+```{r loading data}
+hfi<- readr::read_csv("https://www.openintro.org/data/csv/hfi.csv")
+```
+1. What are the dimensions of the dataset?
+  What does each row represent?
+
+**123 columns/ variables and 1458 entries/rows. Row represent the entries.**
+
+
+### filtering data
+```{r hfi-2016}
+
+# Filter the data for the year 2016
+hfi_2016 <- hfi %>% 
+  filter(year == 2016)
+
+
+# Display the first few rows of the filtered data
+head(hfi_2016)
+```
+

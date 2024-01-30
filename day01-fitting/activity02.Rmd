@@ -412,8 +412,8 @@ Dispersed points show relationship
 ```{r residual_histogram}
 ggplot(data = train_aug, aes(x = .resid)) +
   geom_histogram(binwidth = 0.25) +
-  xlab("Residuals")
-```
+  xlab("Residuals")   
+``` 
 
 Answer the following question:
 

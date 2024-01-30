@@ -36,7 +36,7 @@ If you would like to try the *ISLR* labs using these two packages instead of bas
 - Once you have verified that both `{tidyverse}` and `{tidymodels}` are installed, load these packages in the R chunk below titled `setup`.
   That is, type the following:
   
-```{r library-example, eval = FALSE}
+```{r library-example}
 library(tidyverse)
 library(tidymodels)
 library(dplyr)
@@ -143,10 +143,15 @@ ggplot(hfi_2016, aes(x = pf_expression_control)) +
 4. Comment on each of these two distributions. 
   Be sure to describe their centers, spread, shape, and any potential outliers.
 
+**Distribution of pf_score**-- The distribution of scores in the image appears to be left-skewed. The center of the distribution is near the upper end of the range, at around 6. The spread of the distribution is fairly wide, with scores ranging from 0 to 7.5. There are no clear outliers in the distribution.
+
+**Distribution of pf_expression_control**-- The distribution in the image appears to be a left-skewed normal distribution. The center of the distribution is at around 2.5, with a long tail stretching out to the right. The spread of the distribution is fairly wide, with values ranging from 0 to 7.5. There are no clear outliers in the distribution.
+
 
 
 3. What type of plot would you use to display the relationship between the personal freedom score, `pf_score`, and the political pressures and controls on media content index,`pf_expression_control`?
 
+**Scaterplot**
 
 
 - In the R code chunk below titled `relationship-plot`, plot this relationship using the variable `pf_expression_control` as the predictor/explanatory variable.
@@ -166,6 +171,13 @@ ggplot(hfi_2016, aes(x = pf_expression_control, y = pf_score, color = pf_express
 
 4. Does the relationship look linear?
   If you knew a country's `pf_expression_control`, or its score out of 10, with 0 being the most, of political pressures and controls on media content, would you be comfortable using a linear model to predict the personal freedom score?
+  
+  
+--The relationship between pf_expression_control and pf_scores in the image does not appear to be perfectly linear, but there is a moderate positive correlation. This means that as the score for political pressures and controls on media content increases, the personal freedom score tends to decrease, but not at a constant rate.
+
+Therefore, using a linear model to predict the personal freedom score from a country's pf_expression_control would not be ideal, as it would not capture the full complexity of the relationship. However, a linear model could still be a useful starting point, especially if you are not able to use a more complex model.
+
+
 
 #### Challenge
 
@@ -192,12 +204,14 @@ To begin, we will create a `{parsnip}` specification for a linear model.
 
 - In the code chunk below titled `parsnip-spec`, replace "verbatim" with "r" just before the code chunk title.
 
-```{verbatim parsnip-spec}
+```{r parsnip-spec}
+
 lm_spec <- linear_reg() %>%
   set_mode("regression") %>%
   set_engine("lm")
 
 lm_spec
+
 ```
 
 Note that the `set_mode("regression")` is really unnecessary/redundant as linear models (`"lm"`) can only be regression models.
@@ -214,7 +228,7 @@ Look at your knitted document to see how this syntax appears.
 
 - In the code chunk below titled `fit-lm`, replace "verbatim" with "r" just before the code chunk title. 
 
-```{verbatim fit-lm}
+```{r fit-lm}
 slr_mod <- lm_spec %>% 
   fit(pf_score ~ pf_expression_control, data = hfi_2016)
 
@@ -226,7 +240,7 @@ The above code fits our SLR model, then provides a `tidy` parameter estimates ta
 5. Using the `tidy` output, update the below formula with the estimated parameters.
   That is, replace "intercept" and "slope" with the appropriate values
 
-$\hat{\texttt{pf\score}} = intercept + slope \times \texttt{pf\_expression\_control}$
+$\hat{\texttt{pf\score}} = 4.2838153 + 0.5418452 \times \texttt{pf\_expression\_control}$
 
 
 6. Interpret each of the estimated parameters from (5) in the context of this research question.
@@ -249,7 +263,7 @@ We use `glance` from  `{broom}` (which is automatically loaded with `{tidymodels
 
 - In the code chunk below titled `glance-lm`, replace "verbatim" with "r" just before the code chunk title. 
 
-```{verbatim glance-mod}
+```{r glance-mod}
 glance(slr_mod)
 ```
 
@@ -257,11 +271,17 @@ After doing this and running the code, answer the following questions:
 
 7. What is the value of $R^2$ for this model?
 
+0.7141342
+
 
 
 8. What does this value mean in the context of this model?
   Think about what would a "good" value of $R^2$ would be?
   Can/should this value be "perfect"?
+ 
+ 
+**The value of ranges from 0 to 1, and higher values generally indicate a better fit of the model to the data.**
+The value is 0.7141342 which shows a strong relation
 
 
 
@@ -278,13 +298,31 @@ Using the `diamonds` example provided to you in the Day 2 `README`, do the follo
 - Create an initial 80-20 split of the `hfi_2016` dataset
 - Using your initial split R object, assign the two splits into a training R object and a testing R object.
 
+```{r train-test}
+# set seed before random split
+set.seed(1)
+
+# put 80% of the data into the training set
+hfi_2016_split <- initial_split(hfi_2016, prop = 0.80)
+
+# assign the two splits to data frames - with descriptive names
+hfi_2016_train <- training(hfi_2016_split)
+hfi_2016_test <- testing(hfi_2016_split)
+
+# splits
+hfi_2016_split
+hfi_2016_train
+
+```
+
+
 Now, you will use your training dataset to fit a SLR model.
 
 - In the code chunk below titled `train-fit-lm`, replace "verbatim" with "r" just before the code chunk title and update the data set to your training R object you just created.
 
-```{verbatim train-fit-lm}
+```{r train-fit-lm}
 slr_train <- lm_spec %>% 
-  fit(pf_score ~ pf_expression_control, data = hfi_2016)
+  fit(pf_score ~ pf_expression_control, data = hfi_2016_train)
 
 tidy(slr_train)
 ```
@@ -294,7 +332,7 @@ Notice that you can reuse the `lm_spec` specification because we are still doing
 9. Using the `tidy` output, update the below formula with the estimated parameters.
   That is, replace "intercept" and "slope" with the appropriate values
 
-$\hat{\texttt{pf\score}} = intercept + slope \times \texttt{pf\_expression\_control}$
+$\hat{\texttt{pf\score}} = 4.1748130 + 0.5679447 \times \texttt{pf\_expression\_control}$
 
 
 10. Interpret each of the estimated parameters from (10) in the context of this research question.
@@ -305,8 +343,8 @@ Now we will assess using the testing data set.
 
 - In the code chunk below titled `train-fit-lm`, replace "verbatim" with "r" just before the code chunk title and update `data_test` to whatever R object you assigned your testing data to above.
   
-```{verbatim glance-test}
-test_aug <- augment(slr_train, new_data = data_test)
+```{r glance-test}
+test_aug <- augment(slr_train, new_data = hfi_2016_test)
 test_aug
 ```
 
@@ -324,7 +362,7 @@ The `.fitted` column in this output can also be obtained by using `predict` (i.e
   Compare your results here to your results from your Day 1 of this activity.
   Did this model perform any differently?
 
-
+different
 
 ### Model diagnostics
 
@@ -336,8 +374,8 @@ We can use `broom::augment` to calculate these.
 
 - In the code chunk below titled `augment`, replace "verbatim" with "r" just before the code chunk title and update `data_test` to whatever R object you assigned your testing data to above. 
   
-```{verbatim augment}
-train_aug <- augment(slr_train)
+```{r augment}
+train_aug <- augment(slr_train, new_data =hfi_2016_train)
 
 train_aug
 ```
@@ -348,8 +386,8 @@ We should also verify this condition with a plot of the residuals vs. fitted (pr
 
 - In the code chunk below titled `fitted-residual`, replace "verbatim" with "r" just before the code chunk title. 
   
-```{verbatim fitted-residual}
-ggplot(data = train_aug, aes(x = .fitted, y = .resid)) +
+```{r fitted-residual}
+ggplot(data = train_aug, aes(x = .pred, y = .resid)) +
   geom_point() +
   geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
   xlab("Fitted values") +
@@ -364,12 +402,14 @@ Answer the following question:
 
 11. Is there any apparent pattern in the residuals plot?
   What does this indicate about the linearity of the relationship between the two variables?
+  
+Dispersed points show relationship
 
 **Nearly normal residuals**: To check this condition, we can look at a histogram of the residuals.
 
 - In the code chunk below titled `residual-histogram`, replace "verbatim" with "r" just before the code chunk title. 
  
-```{verbatim fitted-residual}
+```{r residual_histogram}
 ggplot(data = train_aug, aes(x = .resid)) +
   geom_histogram(binwidth = 0.25) +
   xlab("Residuals")
@@ -379,7 +419,7 @@ Answer the following question:
 
 12. Based on the histogram, does the nearly normal residuals condition appear to be violated?
   Why or why not?
-
+No because residuals are normally distributed
 
 **Constant variability**:
 

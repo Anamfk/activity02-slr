@@ -410,7 +410,7 @@ Dispersed points show relationship
 - In the code chunk below titled `residual-histogram`, replace "verbatim" with "r" just before the code chunk title. 
  
 ```{r residual_histogram}
-ggplot(data = train_aug, aes(x = .resid)) +
+ggplot(data = train_aug, aes(x = .resid)) +  
   geom_histogram(binwidth = 0.25) +
   xlab("Residuals")   
 ``` 
